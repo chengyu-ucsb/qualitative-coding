@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body><script>
+(function(){
+  'use strict';
+  var channel='__CHANNEL__';
+  // Match the actual origin serving your GitHub project site, with no path.
+  var allowed=['https://chengyu-ucsb.github.io','https://chengyufang.org'];
+  window.addEventListener('message',function(event){
+    var d=event.data;
+    if(event.source!==window.top || allowed.indexOf(event.origin)<0 || !d || d.type!=='qc-call' || d.channel!==channel || !Array.isArray(d.args)) return;
+    if(d.fn!=='start' && d.fn!=='save') return;
+    function reply(result,error){event.source.postMessage({channel:channel,id:d.id,result:result,error:error},event.origin);}
+    var run=google.script.run.withSuccessHandler(function(result){reply(result,null);}).withFailureHandler(function(){reply(null,'The study server could not complete this request. Please retry.');});
+    if(d.fn==='start') run.start(d.args[0]);
+    if(d.fn==='save') run.save(d.args[0],d.args[1]);
+  });
+  allowed.forEach(function(origin){window.top.postMessage({type:'qc-ready',channel:channel},origin);});
+})();
+</script></body></html>

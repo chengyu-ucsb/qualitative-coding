@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>AI and Education · Qualitative Coding</title>
+<meta name="author" content="Chengyu Fang">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+/* Layout: a reading column for the record beside a sticky coding panel; dialogs for setup, codebook, files and coders. */
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#EDF0EF; --panel:#FFFFFF; --ink:#17201E; --muted:#56655F; --line:#D2DAD7; --soft:#F5F7F6;
+  --accent:#0E6655; --accent-ink:#FFFFFF; --focus:#1456C4;
+  --hl-ai:#CFE0FF; --hl-he:#CBEBD3; --hl-sch:#FFDDB8; --hl-com:#E6D8FA; --hl-ink:#17201E;
+  --inc:#1B7443; --uns:#9A6200; --bkg:#44556B; --exc:#A03B2B;
+  --note-bg:#FFF4DD; --note-line:#E9C77E; --toast-bg:#17201E; --toast-ink:#F4F7F6;
+  --ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --read:"Source Serif 4",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111715; --panel:#1A2220; --ink:#E7EDEB; --muted:#9BADA7; --line:#2D3936; --soft:#202A27;
+    --accent:#52C4A8; --accent-ink:#06231C; --focus:#8AB4FF;
+    --hl-ai:#21407A; --hl-he:#1F5333; --hl-sch:#6A4313; --hl-com:#4A3378; --hl-ink:#F4F7F6;
+    --inc:#59C98A; --uns:#E0A63C; --bkg:#9DB2CF; --exc:#F08A76;
+    --note-bg:#33280F; --note-line:#7A5C1E; --toast-bg:#E7EDEB; --toast-ink:#111715;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111715; --panel:#1A2220; --ink:#E7EDEB; --muted:#9BADA7; --line:#2D3936; --soft:#202A27;
+  --accent:#52C4A8; --accent-ink:#06231C; --focus:#8AB4FF;
+  --hl-ai:#21407A; --hl-he:#1F5333; --hl-sch:#6A4313; --hl-com:#4A3378; --hl-ink:#F4F7F6;
+  --inc:#59C98A; --uns:#E0A63C; --bkg:#9DB2CF; --exc:#F08A76;
+  --note-bg:#33280F; --note-line:#7A5C1E; --toast-bg:#E7EDEB; --toast-ink:#111715;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.55}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+[tabindex="-1"]:focus{outline:none}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;padding:.6rem 1rem}
+.where{font-weight:600;min-width:0}
+.where small{display:block;font-weight:400;color:var(--muted);font-size:.85rem}
+.bar{flex:1 1 10rem;height:.5rem;background:var(--soft);border:1px solid var(--line);border-radius:.25rem;overflow:hidden;min-width:8rem}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+.tools{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:.4rem;padding:.4rem .7rem;color:var(--ink)}
+.btn:hover:not(:disabled){border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.danger{color:var(--exc)}
+.btn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+
+.banner{background:var(--note-bg);border-bottom:1px solid var(--note-line);color:var(--ink)}
+.banner-in{max-width:78rem;margin:0 auto;padding:.6rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center}
+.banner p{margin:0;flex:1 1 18rem;min-width:0}
+
+main{display:grid;grid-template-columns:minmax(0,1fr) 23rem;gap:1.25rem;max-width:78rem;margin:0 auto;padding:1.25rem 1rem 3rem}
+@media (max-width:60rem){main{grid-template-columns:minmax(0,1fr)}}
+.record{background:var(--panel);border:1px solid var(--line);border-radius:.5rem;padding:1.5rem 1.75rem;min-width:0}
+@media (max-width:30rem){.record{padding:1.1rem 1rem}}
+.recno{margin:0 0 .4rem;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums}
+.record h1{font-family:var(--read);font-weight:600;font-size:1.45rem;line-height:1.25;margin:0 0 .6rem;text-wrap:balance;overflow-wrap:anywhere}
+.meta{color:var(--muted);font-size:.92rem;margin:0 0 1.1rem;overflow-wrap:anywhere}
+.meta b{color:var(--ink);font-weight:500}
+.abstract{font-family:var(--read);font-size:1.09rem;line-height:1.62;max-width:68ch;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+mark{color:var(--hl-ink);border-radius:.15rem;padding:0 .1rem}
+.hl-ai{background:var(--hl-ai)} .hl-he{background:var(--hl-he)} .hl-sch{background:var(--hl-sch)} .hl-com{background:var(--hl-com)}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem .9rem;margin:1.2rem 0 0;padding-top:.8rem;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+.legend mark{font-family:var(--ui)}
+
+.coding{align-self:start;position:sticky;top:calc(env(safe-area-inset-top,0px) + 4.2rem);background:var(--panel);border:1px solid var(--line);border-radius:.5rem;padding:1rem 1.1rem;min-width:0}
+@media (max-width:60rem){.coding{position:static}}
+.q{padding:.55rem 0;border-bottom:1px solid var(--line)}
+.q.active .qt{font-weight:600}
+.q.skipped{opacity:.5}
+.qt{margin:0 0 .4rem;font-size:.95rem}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem}
+.opt{background:var(--soft);border:1px solid var(--line);border-radius:.35rem;padding:.38rem .2rem;font-size:.9rem}
+.opt kbd{font-family:var(--ui);font-size:.75rem;color:var(--muted);margin-left:.25rem}
+.opt[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.opt[aria-pressed="true"] kbd{color:var(--panel)}
+.field{display:block;margin:.6rem 0 0;font-size:.88rem;color:var(--muted)}
+.field input,.field select,.field textarea{display:block;width:100%;margin-top:.25rem;background:var(--panel);border:1px solid var(--line);border-radius:.35rem;padding:.4rem .5rem;color:var(--ink)}
+.field textarea{min-height:3.2rem;resize:vertical}
+.need{border-color:var(--exc)!important}
+.dec{padding:.75rem 0 .2rem}
+.dec h2{font-size:.95rem;margin:0 0 .4rem;font-weight:600}
+.decs{display:grid;grid-template-columns:repeat(2,1fr);gap:.35rem}
+.d{border:1px solid var(--line);background:var(--soft);border-radius:.35rem;padding:.45rem .3rem;font-weight:500}
+.d[aria-pressed="true"]{color:var(--panel)}
+.d.include[aria-pressed="true"]{background:var(--inc);border-color:var(--inc)}
+.d.unsure[aria-pressed="true"]{background:var(--uns);border-color:var(--uns)}
+.d.background[aria-pressed="true"]{background:var(--bkg);border-color:var(--bkg)}
+.d.exclude[aria-pressed="true"]{background:var(--exc);border-color:var(--exc)}
+.hint{font-size:.82rem;color:var(--muted);margin:.35rem 0 0}
+.nav{display:flex;gap:.4rem;margin-top:.9rem}
+.nav .btn{flex:1}
+.status{font-size:.82rem;color:var(--muted);margin:.7rem 0 0;display:flex;gap:.45rem;align-items:flex-start}
+.status i{flex:none;width:.55rem;height:.55rem;border-radius:50%;margin-top:.35rem;background:var(--muted)}
+.status[data-mode="page"] i{background:var(--inc)}
+.status[data-mode="browser"] i{background:var(--uns)}
+
+dialog{border:1px solid var(--line);border-radius:.6rem;background:var(--panel);color:var(--ink);max-width:46rem;width:calc(100% - 2rem);padding:1.25rem 1.4rem;max-height:calc(100% - 2rem)}
+dialog.wide{max-width:56rem}
+dialog::backdrop{background:rgba(10,16,14,.55)}
+dialog h2{margin:0 0 .5rem;font-size:1.15rem;text-wrap:balance}
+dialog h3{margin:1.1rem 0 .35rem;font-size:.98rem}
+dialog p,dialog li{margin:.4rem 0;max-width:68ch}
+dialog ul,dialog ol{padding-left:1.25rem;margin:.3rem 0}
+.lede{color:var(--muted)}
+.gridmap{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.6rem,1fr));gap:.25rem;margin:.6rem 0;max-height:34vh;overflow:auto}
+.cell{border:1px solid var(--line);background:var(--soft);border-radius:.25rem;padding:.25rem 0;font-size:.78rem;text-align:center;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cell.include{background:var(--inc);color:var(--panel);border-color:var(--inc)} .cell.unsure{background:var(--uns);color:var(--panel);border-color:var(--uns)}
+.cell.background{background:var(--bkg);color:var(--panel);border-color:var(--bkg)} .cell.exclude{background:var(--exc);color:var(--panel);border-color:var(--exc)}
+.cell.here{outline:2px solid var(--ink);outline-offset:1px}
+.cell.locked{opacity:.45}
+.counts{display:flex;flex-wrap:wrap;gap:.3rem 1.1rem;font-size:.9rem;margin:.4rem 0;font-variant-numeric:tabular-nums}
+.row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.8rem;align-items:center}
+.sep{height:1px;background:var(--line);margin:1rem 0}
+.panel-note{background:var(--soft);border:1px solid var(--line);border-radius:.4rem;padding:.6rem .8rem;font-size:.9rem}
+.msg{font-size:.88rem;color:var(--muted);min-height:1.2em;margin:.5rem 0 0}
+details summary{cursor:pointer;color:var(--muted);font-size:.9rem;margin-top:.6rem}
+.paste{width:100%;min-height:6rem;margin-top:.4rem;background:var(--panel);border:1px solid var(--line);border-radius:.35rem;padding:.45rem .5rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem}
+
+.book{font-size:.95rem}
+.book .crit{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:.2rem .6rem;margin:.5rem 0}
+.book .crit b.n{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600}
+.book .crit p{margin:0 0 .35rem}
+.tablewrap{overflow-x:auto;margin:.4rem 0}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:.4rem .55rem;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--muted);font-size:.82rem;letter-spacing:.02em}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font-size:.78rem;border-radius:999px;padding:.05rem .5rem;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.on{border-color:var(--inc);color:var(--inc)}
+.lab{display:inline-block;min-width:5.6rem;font-weight:600}
+.lab.include{color:var(--inc)} .lab.unsure{color:var(--uns)} .lab.background{color:var(--bkg)} .lab.exclude{color:var(--exc)}
+
+.loading{max-width:78rem;margin:2.5rem auto;padding:0 1rem;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;
+  background:var(--toast-bg);color:var(--toast-ink);border-radius:.5rem;padding:.6rem .9rem;font-size:.92rem;max-width:min(36rem,calc(100% - 2rem));
+  box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.project-brand{display:flex;align-items:center;gap:24px;padding:16px 24px;background:#163f36;color:#fff;font-size:13px}.project-brand a{color:#fff;text-decoration:none;font-weight:600}.project-brand a span{margin-left:10px}.project-name{border-left:1px solid #63877e;padding-left:24px}#modeLabel{margin-left:auto;color:#c4d6cf}.connection-notice{max-width:740px;margin:10vh auto;padding:32px}.connection-notice h1{font-family:var(--read);font-size:42px;line-height:1.12}.connection-notice .btn{display:inline-block;margin:12px 8px 12px 0;text-decoration:none}.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--accent)}@media(max-width:600px){.project-brand{gap:12px;padding:14px}.project-brand a span{display:none}.project-name{padding-left:12px}#modeLabel{font-size:11px}.connection-notice{margin:4vh auto;padding:24px}.connection-notice h1{font-size:32px}}
+</style>
+</head>
+<body>
+<nav class="project-brand"><a href="../">QC <span>Qualitative Coding</span></a><span class="project-name">AI and Education</span><span id="modeLabel">Coding workspace</span></nav>
+<header class="top">
+  <div class="where"><span id="whereMain">AI and Education</span><small id="whereSub"></small></div>
+  <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+  <div class="tools" id="tools" hidden>
+    <button class="btn" id="hlBtn" type="button" aria-pressed="true" title="Shortcut: H">Highlights</button>
+    <button class="btn" id="mapBtn" type="button">Progress</button>
+    <button class="btn" id="bookBtn" type="button">Codebook</button>
+  </div>
+</header>
+
+<div class="banner" id="banner" hidden>
+  <div class="banner-in"><p id="bannerText"></p><button class="btn quiet" id="bannerClose" type="button">Dismiss</button></div>
+</div>
+
+<section id="connectionNotice" class="connection-notice" hidden><p class="eyebrow">AI AND EDUCATION</p><h1>Your coding workspace is taking shape.</h1><p>The study connection has not been activated yet. Once it is ready, enter your coder code here to begin or resume.</p><a class="btn primary" href="?demo=1">Explore the practice workspace</a><a class="btn" href="../setup/">Coordinator setup</a><p class="hint">Practice uses fictional records and does not save to the study.</p></section>
+<p class="loading" id="loading">Opening the coding site&hellip;</p>
+
+<main id="work" hidden>
+  <article class="record" aria-live="polite">
+    <p class="recno" id="recno"></p>
+    <h1 id="title"></h1>
+    <p class="meta" id="meta"></p>
+    <p class="abstract" id="abstract"></p>
+    <div class="legend" id="legend">
+      <span><mark class="hl-ai">AI terms</mark></span>
+      <span><mark class="hl-he">Higher-education terms</mark></span>
+      <span><mark class="hl-sch">School-level terms</mark></span>
+      <span><mark class="hl-com">Communication theories and processes</mark></span>
+    </div>
+  </article>
+
+  <aside class="coding" aria-label="Coding">
+    <div id="questions"></div>
+    <label class="field" id="theoryWrap" hidden>Theory, model or concept the abstract names
+      <input id="theory" type="text" autocomplete="off" placeholder="In the paper's own words">
+    </label>
+    <label class="field" id="codeWrap" hidden>Reason for excluding
+      <select id="code"></select>
+    </label>
+    <div class="dec">
+      <h2>Decision</h2>
+      <div class="decs">
+        <button class="d include" id="decInclude" type="button" data-d="include">Include</button>
+        <button class="d unsure" id="decUnsure" type="button" data-d="unsure">Unsure</button>
+        <button class="d background" id="decBackground" type="button" data-d="background">Background</button>
+        <button class="d exclude" id="decExclude" type="button" data-d="exclude">Exclude</button>
+      </div>
+      <p class="hint" id="decHint"></p>
+    </div>
+    <label class="field">Notes (optional)
+      <textarea id="notes" placeholder="Anything you hesitated over. Notes are read when the decisions are compared."></textarea>
+    </label>
+    <div class="nav">
+      <button class="btn" id="prev" type="button">Previous</button>
+      <button class="btn primary" id="next" type="button">Next record</button>
+    </div>
+    <p class="status" id="status" data-mode="checking"><i aria-hidden="true"></i><span id="statusText"></span></p>
+  </aside>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<dialog id="startDlg" aria-labelledby="startTitle">
+  <h2 id="startTitle">AI and Education</h2>
+  <p class="lede">You'll screen journal records for a scoping review of communication research on generative AI in higher-education teaching and learning, one title and abstract at a time.</p>
+  <p>Enter the coder code Chengyu sent you. You don't need an account. Your work saves as you go, so you can stop at any point and pick up later on any computer by entering the same code.</p>
+  <p>Code on your own: the other coders can't see your decisions, and records aren't discussed until everyone has finished.</p>
+  <label class="field" for="codeInput">Your coder code
+    <input id="codeInput" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="For example, K7P-2QM">
+  </label>
+  <p class="msg" id="startMsg"></p>
+  <div class="row"><button class="btn primary" id="startBtn" type="button">Open my coding</button></div>
+</dialog>
+
+<dialog id="bookDlg" class="wide" aria-labelledby="bookTitle">
+  <div class="book" id="bookBody"><h2 id="bookTitle">Codebook</h2></div>
+  <p class="msg" id="bookFirst" hidden>Read this once before your first record. It stays available from Codebook in the top bar.</p>
+  <div class="row"><button class="btn primary" id="closeBook" type="button">Close</button></div>
+</dialog>
+
+<dialog id="mapDlg" class="wide" aria-labelledby="mapTitle">
+  <h2 id="mapTitle">Your progress</h2>
+  <div class="counts" id="counts"></div>
+  <div class="gridmap" id="gridmap"></div>
+  <div class="row"><button class="btn" id="jumpBtn" type="button">Go to the first record you haven't coded</button></div>
+  <div class="sep"></div>
+  <h3>Saving</h3>
+  <p id="saveExplain"></p>
+  <details><summary>If the site can't save for a long time</summary>
+    <p>Copy your work as text and email it to Chengyu, so nothing is lost.</p>
+    <div class="row"><button class="btn" id="showText" type="button">Show my work as text</button></div>
+    <textarea class="paste" id="copyBox" readonly hidden aria-label="Your work as text"></textarea>
+  </details>
+  <div class="sep"></div>
+  <div class="row"><button class="btn" id="closeMap" type="button">Close</button><button class="btn quiet" id="switchBtn" type="button">Use a different coder code</button></div>
+</dialog>
+
+<dialog id="gateDlg" aria-labelledby="gateTitle">
+  <h2 id="gateTitle"></h2>
+  <p id="gateText"></p>
+  <p id="gateText2"></p>
+  <div class="row">
+    <button class="btn" id="gateStay" type="button">Back to the records</button>
+    <button class="btn" id="gateCheck" type="button">Check whether the test set is open</button>
+    <button class="btn primary" id="gateGo" type="button">Start the test set</button>
+  </div>
+  <p class="msg" id="gateMsg"></p>
+</dialog>
+
+<script src="config.js"></script>
+<script src="../assets/transport.js"></script>
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var DEFAULT_QS = [
+  {k:"topic", t:"About AI or generative AI in teaching or learning?", code:"E1"},
+  {k:"setting", t:"Set in higher education?", code:"E2"},
+  {k:"comm", t:"Uses a theory, model or concept related to communication, or studies a communication process?", code:"E3"},
+  {k:"pub", t:"A peer-reviewed journal publication, in English, from 30 November 2022 on?", code:"E6"}
+];
+var DEFAULT_CODES = [
+  ["E1","Not about AI in teaching or learning"],["E2","Not higher education"],
+  ["E3","No communication theory and no communication process"],
+  ["E4","Technology-acceptance, adoption or attitude study with no communication-related theory"],
+  ["E5","Technical paper or tool description"],["E6","Not a peer-reviewed journal publication"],
+  ["E7","Not English"],["E8","Published before 30 November 2022"],["E9","Duplicate"]
+];
+var QS = DEFAULT_QS.map(function(q){ return {k:q.k, t:q.t, code:q.code}; }), CODES = DEFAULT_CODES.slice();
+var RECS = [], N = 0, SETS = {dev:[], test:[]}, IDX = {}, HAS_DEV = false, HAS_TEST = false, FIRST_TEST = -1;
+var TOTALS = {dev:0, test:0}, SETTINGS = {testOpen:false, codebook:"", message:""};
+var CODE = "", CODER = "";
+var state = {records:{}, posN:null, hl:true, updated:0};
+var pending = {}, inflight = false, timer = null, delay = 0, savedAt = 0, reachable = true;
+var pos = 0, testConfirmed = false;
+
+/* ---------- this browser ---------- */
+function store(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+function load(k){ try{ var s = localStorage.getItem(k); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+function forget(k){ try{ localStorage.removeItem(k); }catch(e){} }
+function norm(c){ return String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); }
+function key(){ return window.QC.namespace + "work:" + norm(CODE); }
+function cacheKey(c){ return window.QC.namespace + "cache:" + norm(c); }
+
+/* ---------- the server ---------- */
+function call(fn){ return window.QC.call(fn, Array.prototype.slice.call(arguments, 1)); }
+
+/* ---------- opening a coder's work ---------- */
+function showStart(msg){
+  $("loading").hidden = true; $("work").hidden = true; $("startMsg").textContent = msg || "";
+  if(!$("startDlg").open){ try{ $("startDlg").showModal(); }catch(e){} }
+  $("codeInput").focus();
+}
+function remember(res){ store(cacheKey(res.code), {coder: res.coder, code: res.code, records: res.records, codebook: res.codebook, settings: res.settings, totals: res.totals}); }
+function begin(code){
+  code = String(code || "").trim();
+  if(!norm(code)){ showStart("Type the code Chengyu sent you."); return; }
+  $("startBtn").disabled = true;
+  if($("startDlg").open) $("startMsg").textContent = "Opening your coding…"; else $("loading").hidden = false;
+  call("start", code).then(function(res){
+    $("startBtn").disabled = false;
+    if(!res || !res.ok){
+      if(res && res.error === "unknown_code"){ forget(window.QC.namespace + "last"); showStart("That code isn't recognised. Check it against the one Chengyu sent you."); }
+      else showStart("The site couldn't open your coding. Try again in a moment.");
+      return;
+    }
+    store(window.QC.namespace + "last", res.code); remember(res);
+    apply(res, true);
+  }, function(err){
+    $("startBtn").disabled = false;
+    var cache = load(cacheKey(code));
+    if(cache && cache.records){
+      apply({ok:true, code:cache.code || code, coder:cache.coder, records:cache.records, codebook:cache.codebook, settings:cache.settings, totals:cache.totals, saved:{}}, false);
+      reachable = false; renderStatus();
+      toast("The site's server didn't answer. Keep coding: your work stays in this browser and is sent when the connection is back.");
+      schedule(5000);
+    } else {
+      showStart(String(err && err.message || "").indexOf("not set up") >= 0 ? "The site isn't set up yet. Let Chengyu know." : "The site's server didn't answer. Check your connection and try again.");
+    }
+  });
+}
+function apply(res, fresh){
+  var firstOpen = !CODE;
+  CODE = res.code; CODER = res.coder || "Coder";
+  SETTINGS = res.settings || SETTINGS; TOTALS = res.totals || TOTALS;
+  var qs = SETTINGS.questions || {};
+  QS = DEFAULT_QS.map(function(q){ return {k:q.k, t:qs[q.k] || q.t, code:q.code}; });
+  RECS = (res.records || []).slice().sort(function(a, b){ return (a.set === b.set ? 0 : (a.set === "dev" ? -1 : 1)) || a.n - b.n; });
+  N = RECS.length; SETS = {dev:[], test:[]}; IDX = {};
+  RECS.forEach(function(r, i){ (SETS[r.set] = SETS[r.set] || []).push(i); IDX[r.n] = i; });
+  HAS_DEV = SETS.dev.length > 0; HAS_TEST = TOTALS.test > 0; FIRST_TEST = SETS.test.length ? SETS.test[0] : -1;
+  if(!N){ CODE = ""; showStart("There are no records to code yet. Let Chengyu know."); return; }
+  buildBook(res.codebook || []);
+  var mine = load(key()) || {records:{}, posN:null, hl:true, updated:0};
+  if(!mine.records) mine.records = {};
+  var server = res.saved || {};
+  Object.keys(server).forEach(function(n){
+    var a = mine.records[n], b = server[n];
+    if(!a || (b.ts || 0) >= (a.ts || 0)) mine.records[n] = b;
+  });
+  Object.keys(mine.records).forEach(function(n){
+    var a = mine.records[n], b = server[n];
+    if(a && a.ts && (!b || (a.ts || 0) > (b.ts || 0))) pending[n] = true;   /* changed here and not yet on the server */
+  });
+  state = mine; store(key(), state);
+  buildQuestions();
+  placeAt();
+  if(hasWork()){ var f = firstUncoded(); if(f >= 0 && isDone(state.records[RECS[pos].n])) pos = f; }
+  if($("startDlg").open) $("startDlg").close();
+  $("loading").hidden = true; $("work").hidden = false; $("tools").hidden = false;
+  render(); renderStatus(); renderBanner(); openedAt = Date.now();
+  if(Object.keys(pending).length) schedule(500);
+  if(firstOpen){
+    if(!hasWork() && fresh){ openBook(true); toast("Welcome, " + CODER + "."); }
+    else toast("Welcome back, " + CODER + ". You're at record no. " + RECS[pos].n + ".");
+  }
+}
+
+/* ---------- saving ---------- */
+function touch(n){
+  state.updated = Date.now(); store(key(), state);
+  if(n !== undefined && n !== null){ pending[n] = true; schedule(700); }
+  renderStatus();
+}
+function schedule(ms){ clearTimeout(timer); timer = setTimeout(flush, ms); }
+function flush(){
+  if(inflight || !CODE) return;
+  var ns = Object.keys(pending); if(!ns.length) return;
+  var items = ns.map(function(n){
+    var r = state.records[n] || {};
+    return {n:Number(n), topic:r.topic || null, setting:r.setting || null, comm:r.comm || null, pub:r.pub || null, decision:r.decision || "", code:r.code || "",
+      theory:r.theory || "", notes:r.notes || "", manual:!!r.manual, secs:r.secs || 0, hl:r.hl !== false, ts:r.ts || 0};
+  });
+  var sent = {}; items.forEach(function(it){ sent[it.n] = it.ts; });
+  inflight = true; renderStatus();
+  call("save", CODE, items).then(function(res){
+    inflight = false;
+    if(!res || !res.ok){
+      if(res && res.error === "unknown_code"){ reachable = true; renderStatus("Your code has been switched off, so your changes can't be saved. Let Chengyu know."); return; }
+      if(res && res.error === "test_locked"){ renderStatus("The test set is locked. Finish and save development coding, then check again."); return; }
+      return failed();
+    }
+    Object.keys(sent).forEach(function(n){ var r = state.records[n]; if(!r || (r.ts || 0) <= sent[n]) delete pending[n]; });
+    savedAt = Date.now(); delay = 0; reachable = true; renderStatus();
+    if(Object.keys(pending).length) schedule(300);
+  }, function(){ inflight = false; failed(); });
+}
+function failed(){ reachable = false; delay = Math.min(delay ? delay * 2 : 4000, 60000); schedule(delay); renderStatus(); }
+window.addEventListener("online", function(){ schedule(200); });
+document.addEventListener("visibilitychange", function(){ if(document.hidden){ bank(); if(CODE) store(key(), state); flush(); } else { openedAt = Date.now(); } });
+window.addEventListener("beforeunload", function(e){ bank(); if(CODE) store(key(), state); if(Object.keys(pending).length){ e.preventDefault(); e.returnValue = ""; } });
+
+function hhmm(t){ var d = new Date(t); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+function renderStatus(msg){
+  var el = $("status"), waiting = Object.keys(pending).length, t;
+  if(msg) t = msg;
+  else if(!reachable && waiting) t = "The server isn't answering. " + waiting + " change" + (waiting === 1 ? " is" : "s are") + " kept in this browser, and the page keeps trying to send " + (waiting === 1 ? "it." : "them.");
+  else if(waiting || inflight) t = "Saving…";
+  else if(savedAt) t = "All your changes are saved. Last saved at " + hhmm(savedAt) + ".";
+  else t = "Your work saves as you go.";
+  if(window.QC.demo) t = "Practice only · saved in this browser. No study data is sent.";
+  el.dataset.mode = (!reachable && waiting) ? "browser" : "page";
+  $("statusText").textContent = t;
+  $("saveExplain").textContent = "Each change is saved to the study's database within a second or two, so there's nothing to send at the end. You can stop at any point and come back on any computer: open the site and enter your code, " + CODE + ". If the connection drops, the page keeps your changes in this browser and sends them when it's back.";
+}
+function openBook(first){
+  $("bookFirst").hidden = !first;
+  if(!$("bookDlg").open){ try{ $("bookDlg").showModal(); }catch(e){} }
+  var t = $("bookTitle"); if(t){ t.setAttribute("tabindex", "-1"); try{ t.focus({preventScroll: true}); }catch(e){} }
+  $("bookDlg").scrollTop = 0;
+}
+function renderBanner(){ var m = String(SETTINGS.message || "").trim(); $("banner").hidden = !m; $("bannerText").textContent = m; }
+
+/* ---------- codebook ---------- */
+function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text !== undefined) e.textContent = text; return e; }
+function buildBook(rows){
+  var box = $("bookBody"); box.textContent = "";
+  var reasons = [], list = null, table = null, tableKind = "", crit = null;
+  var heading = function(text){ var h = el("h2", "", text); if(!$("bookTitle")) h.id = "bookTitle"; box.appendChild(h); };
+  if(!rows.length){ heading("Codebook"); box.appendChild(el("p", "", "The codebook couldn't be loaded. Ask Chengyu for a copy before you start.")); }
+  rows.forEach(function(r){
+    var kind = String(r.kind || "").toLowerCase(), k = String(r.key || ""), t = String(r.text || "");
+    if(kind !== "li") list = null;
+    if(kind !== tableKind){ table = null; tableKind = ""; }
+    if(kind !== "more" && kind !== "crit") crit = null;
+    if(kind === "title") heading(t.replace("{version}", SETTINGS.codebook || ""));
+    else if(kind === "lede") box.appendChild(el("p", "lede", t));
+    else if(kind === "h") box.appendChild(el("h3", "", t));
+    else if(kind === "p") box.appendChild(el("p", "", t));
+    else if(kind === "li"){ if(!list){ list = el("ul"); box.appendChild(list); } list.appendChild(el("li", "", t)); }
+    else if(kind === "crit"){
+      var c = el("div", "crit"), m = /^(\d+)\.?\s*(.*)$/.exec(k) || [null, "", k];
+      c.appendChild(el("b", "n", m[1])); crit = el("div");
+      var p = el("p"); if(m[2]) p.appendChild(el("b", "", m[2].replace(/\.$/, "") + ". ")); p.appendChild(document.createTextNode(t));
+      crit.appendChild(p); c.appendChild(crit); box.appendChild(c);
+    }
+    else if(kind === "more"){ (crit || box).appendChild(el("p", "", t)); }
+    else if(kind === "label"){ var p2 = el("p"); p2.appendChild(el("span", "lab " + k.toLowerCase(), k)); p2.appendChild(document.createTextNode(" " + t)); box.appendChild(p2); }
+    else if(kind === "reason" || kind === "register"){
+      if(!table){
+        var wrap = el("div", "tablewrap"), th = el("thead"), tr0 = el("tr"); table = el("table");
+        (kind === "reason" ? ["Reason", "Meaning"] : ["Theory, model or concept", "Ruling"]).forEach(function(h){ var x = el("th", "", h); x.scope = "col"; tr0.appendChild(x); });
+        th.appendChild(tr0); table.appendChild(th); table.appendChild(el("tbody")); wrap.appendChild(table); box.appendChild(wrap); tableKind = kind;
+      }
+      var tr = el("tr"); tr.appendChild(el("td", kind === "reason" ? "num" : "", k)); tr.appendChild(el("td", "", t)); table.tBodies[0].appendChild(tr);
+      if(kind === "reason" && k.trim()) reasons.push([k.trim(), t.trim()]);
+    }
+  });
+  CODES = reasons.length ? reasons : DEFAULT_CODES.slice();
+  var sel = $("code"); sel.textContent = ""; var o0 = el("option", "", "Choose a reason"); o0.value = ""; sel.appendChild(o0);
+  CODES.forEach(function(c){ var o = el("option", "", c[0] + " " + c[1]); o.value = c[0]; sel.appendChild(o); });
+}
+
+/* ---------- coding logic ---------- */
+function isDone(r){ return !!r && !!r.decision && (r.decision !== "exclude" || !!r.code); }
+function counts(){
+  var c = {dev:{done:0, total:TOTALS.dev, by:{}}, test:{done:0, total:TOTALS.test, by:{}}};
+  Object.keys(state.records).forEach(function(n){ var r = state.records[n], i = IDX[n]; if(i === undefined || !isDone(r)) return; var s = c[RECS[i].set]; if(!s) return; s.done++; s.by[r.decision] = (s.by[r.decision] || 0) + 1; });
+  return c;
+}
+function devLeft(){ return SETS.dev.filter(function(i){ return !isDone(state.records[RECS[i].n]); }).length; }
+function hasWork(){ return Object.keys(state.records).some(function(n){ return IDX[n] !== undefined && isDone(state.records[n]); }); }
+function testStarted(){ return SETS.test.some(function(i){ var r = state.records[RECS[i].n]; return !!(r && (r.decision || r.topic)); }); }
+function allowed(i){ return !(HAS_DEV && RECS[i].set === "test") || (devLeft() === 0 && SETTINGS.testOpen); }
+function firstUncoded(){ for(var i = 0; i < N; i++){ if(allowed(i) && !isDone(state.records[RECS[i].n])) return i; } return -1; }
+function rec(n){ var r = state.records[n]; if(!r){ r = {topic:null, setting:null, comm:null, pub:null, decision:null, code:"", theory:"", notes:"", manual:false, secs:0, ts:0}; state.records[n] = r; } return r; }
+function autoDecision(r){
+  var a = QS.map(function(q){ return r[q.k]; });
+  if(a.indexOf("n") >= 0) return "exclude";
+  if(a.every(function(x){ return x === "y"; })) return "include";
+  if(a.every(function(x){ return !!x; })) return "unsure";
+  return null;
+}
+function autoCode(r){ for(var i = 0; i < QS.length; i++){ if(r[QS[i].k] === "n") return QS[i].code; } return ""; }
+function fitCode(r){ var a = autoCode(r); if(a === "E6" && (r.code === "E7" || r.code === "E8")) return r.code; return a; }
+function activeQ(r){ if(r.manual) return -1; for(var i = 0; i < QS.length; i++){ if(r[QS[i].k] === "n") return -1; if(!r[QS[i].k]) return i; } return -1; }
+var sitting = 0;
+function stamp(r, was){
+  r.ts = Date.now(); r.hl = state.hl; state.posN = RECS[pos].n; touch(RECS[pos].n);
+  if(!was && isDone(r)){ sitting++; if(sitting % 15 === 0) toast(sitting + " records coded this sitting. A good point for a break; your work is saved."); }
+}
+function answer(i, v){
+  var r = rec(RECS[pos].n), was = isDone(r);
+  r[QS[i].k] = (r[QS[i].k] === v) ? null : v;
+  if(!r.manual){ r.decision = autoDecision(r); r.code = r.decision === "exclude" ? fitCode(r) : (r.code === "E7" || r.code === "E8" ? r.code : ""); }
+  stamp(r, was); render();
+}
+function decide(d){
+  var r = rec(RECS[pos].n), was = isDone(r), auto = autoDecision(r);
+  r.decision = d; r.manual = (d !== auto);
+  if(d === "exclude"){ if(!r.code) r.code = autoCode(r); } else { r.code = ""; }
+  stamp(r, was); render();
+}
+
+/* ---------- time on record ---------- */
+var openedAt = Date.now();
+function bank(){ if(!N) return; var r = state.records[RECS[pos].n]; var s = Math.min((Date.now() - openedAt) / 1000, 600); if(r && s > 0.5){ r.secs = Math.round(((r.secs || 0) + s) * 10) / 10; } openedAt = Date.now(); }
+
+/* ---------- highlights ---------- */
+var HL = new RegExp([
+  "(?<ai>\\b(?:generative (?:AI|artificial intelligence)|gen-?AI|ChatGPT|GPT-?\\d[\\w.]*|large language models?|LLMs?|chatbots?|artificial intelligence|AI|conversational agents?|Copilot|Gemini|DeepSeek)\\b)",
+  "(?<sch>\\b(?:K-?12|primary schools?|elementary schools?|secondary schools?|high schools?|middle schools?|kindergartens?|pupils|schoolteachers?|school teachers?)\\b)",
+  "(?<he>\\b(?:higher education|universit(?:y|ies)|colleges?|undergraduates?|postgraduates?|graduate students?|doctoral|PhD|faculty|professors?|instructors?|lecturers?|tertiary|supervisors?|supervision)\\b)",
+  "(?<com>\\b(?:social presence|communit(?:y|ies) of inquiry|teaching presence|cognitive presence|computers are social actors|CASA|human[-\\u2013 ]machine communication|AI-mediated communication|credibility|immediacy|rapport|clarity|expectancy violations?|privacy management|uncertainty reduction|framing|symbolic interactionism|dialogic|dialogue|rhetoric\\w*|authorship|parasocial|anthropomorph\\w+|activity theory|sociocultural|Vygotsk\\w+|affordances?|actor[- ]network|diffusion of innovations?|uses and gratifications|self-disclosure|disclos\\w+|interpersonal|relational|relationships?|feedback|trust|communicat\\w+|discourse|sense-?making|semiotic\\w*|politeness|facework|willingness to communicate|social support)\\b)"
+].join("|"), "gi");
+function paint(node, text){
+  node.textContent = "";
+  if(!state.hl){ node.textContent = text; return; }
+  var last = 0, m; HL.lastIndex = 0;
+  while((m = HL.exec(text)) !== null){
+    if(m.index > last) node.appendChild(document.createTextNode(text.slice(last, m.index)));
+    var g = m.groups, k = g.ai !== undefined ? "ai" : g.sch !== undefined ? "sch" : g.he !== undefined ? "he" : "com";
+    var s = document.createElement("mark"); s.className = "hl-" + k; s.textContent = m[0]; node.appendChild(s);
+    last = m.index + m[0].length; if(m[0].length === 0) HL.lastIndex++;
+  }
+  if(last < text.length) node.appendChild(document.createTextNode(text.slice(last)));
+}
+
+/* ---------- rendering ---------- */
+function buildQuestions(){
+  var box = $("questions"); box.textContent = "";
+  QS.forEach(function(q, i){
+    var d = el("div", "q"); d.id = "q" + i;
+    d.appendChild(el("p", "qt", (i + 1) + ". " + q.t));
+    var o = el("div", "opts");
+    [["y","Yes","Y"],["n","No","N"],["u","Cannot tell","U"]].forEach(function(x){
+      var b = el("button", "opt"); b.type = "button"; b.dataset.v = x[0]; b.id = "q" + i + x[0];
+      b.appendChild(document.createTextNode(x[1])); b.appendChild(el("kbd", "", x[2]));
+      b.addEventListener("click", function(){ answer(i, x[0]); }); o.appendChild(b);
+    });
+    d.appendChild(o); box.appendChild(d);
+  });
+}
+function render(){
+  if(!N) return;
+  var cur = RECS[pos], list = SETS[cur.set];
+  $("whereMain").textContent = (cur.set === "dev" ? "Development set" : "Test set") + ", " + (list.indexOf(pos) + 1) + " of " + list.length;
+  var c = counts(), sub = [];
+  if(HAS_DEV) sub.push("Development " + c.dev.done + " of " + c.dev.total + " coded");
+  if(HAS_TEST) sub.push("Test " + c.test.done + " of " + c.test.total + (SETTINGS.testOpen ? "" : ", opens later"));
+  $("whereSub").textContent = CODER + " · " + sub.join(" · ");
+  var cs = c[cur.set]; $("barFill").style.width = (100 * cs.done / Math.max(1, cs.total)) + "%";
+  $("recno").textContent = "Record no. " + cur.n;
+  $("title").textContent = cur.title;
+  var meta = $("meta"); meta.textContent = "";
+  [[cur.authors, false], [cur.venue, true], [cur.year, false], [cur.type ? "labelled " + cur.type.replace(/-/g, " ") : "", false]].forEach(function(x){
+    if(!x[0]) return; if(meta.childNodes.length) meta.appendChild(document.createTextNode("; "));
+    if(x[1]) meta.appendChild(el("b", "", x[0])); else meta.appendChild(document.createTextNode(String(x[0])));
+  });
+  paint($("abstract"), cur.abstract || "(No abstract)");
+  $("legend").hidden = !state.hl; $("hlBtn").setAttribute("aria-pressed", state.hl ? "true" : "false");
+  var r = rec(cur.n), act = activeQ(r), blocked = false;
+  QS.forEach(function(q, i){
+    var d = $("q" + i); d.classList.toggle("active", i === act); d.classList.toggle("skipped", blocked && !r[q.k]);
+    Array.prototype.forEach.call(d.querySelectorAll(".opt"), function(b){ b.setAttribute("aria-pressed", r[q.k] === b.dataset.v ? "true" : "false"); });
+    if(r[q.k] === "n") blocked = true;
+  });
+  $("theoryWrap").hidden = !(r.comm === "y" || r.comm === "u" || r.decision === "include"); if(document.activeElement !== $("theory")) $("theory").value = r.theory || "";
+  $("codeWrap").hidden = r.decision !== "exclude"; $("code").value = r.code || ""; $("code").classList.toggle("need", r.decision === "exclude" && !r.code);
+  Array.prototype.forEach.call(document.querySelectorAll(".d"), function(b){ b.setAttribute("aria-pressed", r.decision === b.dataset.d ? "true" : "false"); });
+  var hint;
+  if(!r.decision) hint = "Answer the questions, or pick a decision yourself.";
+  else if(r.manual) hint = "You set this decision yourself.";
+  else if(r.decision === "exclude" && ["E1","E2","E3"].indexOf(r.code) >= 0) hint = "Filled in from your answers. If the record fits one of the two background kinds in the codebook, choose Background.";
+  else hint = "Filled in from your answers. Change it if you disagree.";
+  $("decHint").textContent = hint;
+  if(document.activeElement !== $("notes")) $("notes").value = r.notes || "";
+  $("prev").disabled = pos === 0;
+  var lastDev = HAS_DEV ? SETS.dev[SETS.dev.length - 1] : -1, label = "Next record";
+  if(pos === lastDev && HAS_TEST) label = "Finish the development set";
+  else if(pos === N - 1) label = "Finish";
+  $("next").textContent = label;
+}
+var toastTimer = null;
+function toast(t){ var e = $("toast"); e.textContent = t; e.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function(){ e.hidden = true; }, 7000); }
+
+/* ---------- moving between records ---------- */
+function placeAt(){
+  var i = (state.posN !== null && state.posN !== undefined && IDX[state.posN] !== undefined) ? IDX[state.posN] : 0;
+  if(!allowed(i)){ var f = firstUncoded(); i = f >= 0 ? f : 0; }
+  pos = i;
+}
+function go(i){
+  bank();
+  if(i < 0) i = 0;
+  if(i >= N){ finish(); return; }
+  if(!allowed(i)){ gate(); return; }
+  if(RECS[i].set === "test" && RECS[pos].set === "dev" && !testConfirmed && !testStarted()){ gate(); return; }
+  pos = i; state.posN = RECS[pos].n; touch(null);
+  render(); window.scrollTo(0, 0); openedAt = Date.now();
+}
+function showGate(title, text, text2, opts){
+  $("gateTitle").textContent = title; $("gateText").textContent = text; $("gateText2").textContent = text2 || "";
+  $("gateGo").hidden = !opts.go; $("gateCheck").hidden = !opts.check; $("gateMsg").textContent = "";
+  if(!$("gateDlg").open) $("gateDlg").showModal();
+}
+var SAVED_LINE = "Your work is saved to the study's database, so there's nothing to send.";
+function gate(){
+  var left = devLeft();
+  if(left) showGate("Finish the development set first", left + " of the " + SETS.dev.length + " development records aren't coded yet. Use Progress to find them.", "", {});
+  else if(!SETTINGS.testOpen) showGate("Development set done", "Thank you. The test set opens once everyone's development set has been compared and the codebook wording is final. Chengyu will tell you when.", SAVED_LINE, {check: true});
+  else if(FIRST_TEST >= 0) showGate("Ready for the test set", "The test set has " + SETS.test.length + " records. The questions and labels work the same way. The codebook opens first: its wording may have changed since the development set.", "", {go: true});
+  else showGate("The test set is open", "Load it to begin.", "", {check: true});
+}
+function finish(){
+  if(HAS_DEV && HAS_TEST && !(devLeft() === 0 && SETTINGS.testOpen && FIRST_TEST >= 0)){ gate(); return; }
+  var left = 0; for(var i = 0; i < N; i++){ if(allowed(i) && !isDone(state.records[RECS[i].n])) left++; }
+  if(left) showGate("Some records aren't coded yet", left + " record" + (left === 1 ? " isn't" : "s aren't") + " coded. Use Progress to find them.", "", {});
+  else showGate("All done", "You've coded every record. Thank you.", SAVED_LINE, {});
+}
+function refresh(){
+  $("gateMsg").textContent = "Checking…"; $("gateCheck").disabled = true;
+  call("start", CODE).then(function(res){
+    $("gateCheck").disabled = false;
+    if(!res || !res.ok){ $("gateMsg").textContent = "Couldn't check just now. Try again in a moment."; return; }
+    remember(res); apply(res, true);
+    if(res.settings.testOpen && FIRST_TEST >= 0) gate();
+    else $("gateMsg").textContent = "Not yet. Chengyu will tell you when it opens.";
+  }, function(){ $("gateCheck").disabled = false; $("gateMsg").textContent = "The server didn't answer. Try again in a moment."; });
+}
+function openMap(){
+  var g = $("gridmap"); g.textContent = "";
+  RECS.forEach(function(x, i){
+    var r = state.records[x.n], d = isDone(r) ? r.decision : "none", ok = allowed(i);
+    var b = el("button", "cell " + (d === "none" ? "" : d) + (i === pos ? " here" : "") + (ok ? "" : " locked"), String(x.n)); b.type = "button";
+    b.title = "Record " + x.n + (d === "none" ? ", not coded" : ", " + d) + (ok ? "" : ", opens later");
+    b.addEventListener("click", function(){ $("mapDlg").close(); go(i); }); g.appendChild(b);
+  });
+  var c = counts(), box = $("counts"); box.textContent = "";
+  var line = function(name, k){ return name + ": " + k.done + " of " + k.total + " coded" + (k.done ? " (" + ["include","unsure","background","exclude"].map(function(d){ return (k.by[d] || 0) + " " + d; }).join(", ") + ")" : ""); };
+  if(HAS_DEV) box.appendChild(el("span", "", line("Development set", c.dev)));
+  if(HAS_TEST) box.appendChild(el("span", "", line("Test set", c.test) + (SETTINGS.testOpen ? "" : ", opens later")));
+  $("copyBox").hidden = true; renderStatus();
+  $("mapDlg").showModal();
+}
+
+/* ---------- events ---------- */
+Array.prototype.forEach.call(document.querySelectorAll(".d"), function(b){ b.addEventListener("click", function(){ decide(b.dataset.d); }); });
+$("code").addEventListener("change", function(){ var r = rec(RECS[pos].n), was = isDone(r); r.code = this.value; stamp(r, was); render(); });
+$("theory").addEventListener("input", function(){ var r = rec(RECS[pos].n); r.theory = this.value; r.ts = Date.now(); touch(RECS[pos].n); });
+$("notes").addEventListener("input", function(){ var r = rec(RECS[pos].n); r.notes = this.value; r.ts = Date.now(); touch(RECS[pos].n); });
+$("prev").addEventListener("click", function(){ go(pos - 1); });
+$("next").addEventListener("click", function(){ go(pos + 1); });
+$("hlBtn").addEventListener("click", function(){ state.hl = !state.hl; touch(null); render(); });
+$("mapBtn").addEventListener("click", function(){ if(N) openMap(); });
+$("bookBtn").addEventListener("click", function(){ openBook(false); });
+$("closeBook").addEventListener("click", function(){ $("bookDlg").close(); });
+$("closeMap").addEventListener("click", function(){ $("mapDlg").close(); });
+$("jumpBtn").addEventListener("click", function(){ var i = firstUncoded(); $("mapDlg").close(); if(i >= 0) go(i); else finish(); });
+$("showText").addEventListener("click", function(){ var b = $("copyBox"); b.value = JSON.stringify({kind:"calibration-coding", coder:CODER, code:CODE, exportedAt:new Date().toISOString(), records:state.records}); b.hidden = false; b.focus(); b.select(); });
+$("switchBtn").addEventListener("click", function(){
+  if(Object.keys(pending).length || inflight){ toast("Some changes are still being saved. Try again in a moment."); flush(); return; }
+  forget(window.QC.namespace + "last"); clearTimeout(timer);
+  CODE = ""; CODER = ""; state = {records:{}, posN:null, hl:true, updated:0}; pending = {}; RECS = []; N = 0; savedAt = 0; testConfirmed = false; sitting = 0;
+  $("mapDlg").close(); $("tools").hidden = true; $("banner").hidden = true; $("whereMain").textContent = "AI and Education"; $("whereSub").textContent = ""; $("barFill").style.width = "0";
+  $("codeInput").value = ""; showStart("");
+});
+$("gateStay").addEventListener("click", function(){ $("gateDlg").close(); });
+$("gateGo").addEventListener("click", function(){ $("gateDlg").close(); testConfirmed = true; go(FIRST_TEST); openBook(false); });
+$("gateCheck").addEventListener("click", refresh);
+$("bannerClose").addEventListener("click", function(){ $("banner").hidden = true; });
+$("startBtn").addEventListener("click", function(){ begin($("codeInput").value); });
+$("codeInput").addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); begin(this.value); } });
+$("startDlg").addEventListener("cancel", function(e){ if(!CODE) e.preventDefault(); });
+document.addEventListener("keydown", function(e){
+  if(!N) return;
+  var t = e.target, tag = t && t.tagName; if(tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  if(document.querySelector("dialog[open]")) return; if(e.metaKey || e.ctrlKey || e.altKey) return;
+  var k = e.key.toLowerCase(), act = activeQ(rec(RECS[pos].n));
+  if((k === "y" || k === "n" || k === "u") && act >= 0){ e.preventDefault(); answer(act, k); }
+  else if(k === "enter" || k === "arrowright"){ e.preventDefault(); go(pos + 1); }
+  else if(k === "arrowleft"){ e.preventDefault(); go(pos - 1); }
+  else if(k === "h"){ e.preventDefault(); state.hl = !state.hl; touch(null); render(); }
+});
+
+/* ---------- start ---------- */
+if(window.QC.demo){
+  $("modeLabel").textContent = "Practice · synthetic records";
+  $("startDlg").querySelector(".lede").textContent = "Explore the workflow with three fictional records. Practice choices stay in this browser and never enter the study.";
+  $("startDlg").querySelectorAll("p")[1].textContent = "Use the practice code DEMO. Your study coder code is not needed here.";
+  $("codeInput").value = "DEMO";
+}
+if(!window.QC.demo && !window.QC.configured){
+  $("loading").hidden = true;
+  document.getElementById("connectionNotice").hidden = false;
+  return;
+}
+var last = load(window.QC.namespace + "last");
+if(last){ $("codeInput").value = last; begin(last); } else { showStart(""); }
+})();
+</script>
+</body>
+</html>
