@@ -423,7 +423,7 @@ function renderStatus(msg){
   if(window.QC.demo) t = "Practice only · saved in this browser. No study data is sent.";
   el.dataset.mode = (!reachable && waiting) ? "browser" : "page";
   $("statusText").textContent = t;
-  $("saveExplain").textContent = "Each change is saved to the study's database within a second or two, so there's nothing to send at the end. You can stop at any point and come back on any computer: open the site and enter your code, " + CODE + ". If the connection drops, the page keeps your changes in this browser and sends them when it's back.";
+  $("saveExplain").textContent = window.QC.demo ? "Practice choices stay in this browser only. They do not enter the study and will not follow you to another device. Open the live project and use your own coder code when the coordinator activates the study." : "Each change is saved to the study's database as the connection allows. Wait for the saved confirmation before switching computers. To resume, open the site and enter your code, " + CODE + ". If the connection drops, the page keeps your changes in this browser and sends them when it's back.";
 }
 function openBook(first){
   $("bookFirst").hidden = !first;
@@ -700,6 +700,7 @@ if(window.QC.demo){
   $("modeLabel").textContent = "Practice · synthetic records";
   $("startDlg").querySelector(".lede").textContent = "Explore the workflow with three fictional records. Practice choices stay in this browser and never enter the study.";
   $("startDlg").querySelectorAll("p")[1].textContent = "Use the practice code DEMO. Your study coder code is not needed here.";
+  $("startDlg").querySelectorAll("p")[2].textContent = "This practice area is separate from your study workspace.";
   $("codeInput").value = "DEMO";
 }
 if(!window.QC.demo && !window.QC.configured){
